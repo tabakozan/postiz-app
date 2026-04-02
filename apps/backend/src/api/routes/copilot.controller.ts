@@ -38,8 +38,7 @@ export class CopilotController {
   ) {}
   @Post('/chat')
   chatAgent(@Req() req: Request, @Res() res: Response) {
-    const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
-    if (!apiKey) {
+    if (!process.env.OPENROUTER_API_KEY && !process.env.OPENAI_API_KEY) {
       Logger.warn('OPENROUTER_API_KEY not set, chat functionality will not work');
       return;
     }
@@ -49,9 +48,6 @@ export class CopilotController {
       runtime: new CopilotRuntime(),
       serviceAdapter: new OpenAIAdapter({
         model: process.env.POSTIZ_COMPLEX_MODEL || 'openai/gpt-4.1',
-        openaiApiKey: apiKey,
-        // @ts-ignore – CopilotKit OpenAIAdapter supports baseURL
-        baseURL: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1',
       }),
     });
 
@@ -65,8 +61,7 @@ export class CopilotController {
     @Res() res: Response,
     @GetOrgFromRequest() organization: Organization
   ) {
-    const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
-    if (!apiKey) {
+    if (!process.env.OPENROUTER_API_KEY && !process.env.OPENAI_API_KEY) {
       Logger.warn('OPENROUTER_API_KEY not set, chat functionality will not work');
       return;
     }
@@ -97,9 +92,6 @@ export class CopilotController {
       // properties: req.body.variables.properties,
       serviceAdapter: new OpenAIAdapter({
         model: process.env.POSTIZ_COMPLEX_MODEL || 'openai/gpt-4.1',
-        openaiApiKey: apiKey,
-        // @ts-ignore – CopilotKit OpenAIAdapter supports baseURL
-        baseURL: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1',
       }),
     });
 
