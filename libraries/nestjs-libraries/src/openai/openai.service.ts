@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import OpenAI from 'openai';
 import { shuffle } from 'lodash';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
+import {
+  createOpenAIClient,
+  generateImage,
+  LIGHT_MODEL,
+  COMPLEX_MODEL,
+} from '@gitroom/nestjs-libraries/openrouter/openrouter.config';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || 'sk-proj-',
-});
+const openai = createOpenAIClient();
 
 const PicturePrompt = z.object({
   prompt: z.string(),
@@ -19,23 +22,23 @@ const VoicePrompt = z.object({
 @Injectable()
 export class OpenaiService {
   async generateImage(prompt: string, isUrl: boolean, isVertical = false) {
-    const generate = (
-      await openai.images.generate({
-        prompt,
-        response_format: isUrl ? 'url' : 'b64_json',
-        model: 'dall-e-3',
-        ...(isVertical ? { size: '1024x1792' } : {}),
-      })
-    ).data[0];
+    const imageData = await generateImage(prompt, { vertical: isVertical });
 
-    return isUrl ? generate.url : generate.b64_json;
+    // OpenRouter returns base64 data URLs — if caller wants URL, return as-is
+    // If caller wants b64_json, strip the data URI prefix
+    if (!isUrl && imageData.startsWith('data:')) {
+      const base64 = imageData.split(',')[1];
+      return base64;
+    }
+
+    return imageData;
   }
 
   async generatePromptForPicture(prompt: string) {
     return (
       (
         await openai.chat.completions.parse({
-          model: 'gpt-4.1',
+          model: COMPLEX_MODEL,
           messages: [
             {
               role: 'system',
@@ -56,7 +59,7 @@ export class OpenaiService {
     return (
       (
         await openai.chat.completions.parse({
-          model: 'gpt-4.1',
+          model: COMPLEX_MODEL,
           messages: [
             {
               role: 'system',
@@ -90,7 +93,7 @@ export class OpenaiService {
           ],
           n: 5,
           temperature: 1,
-          model: 'gpt-4.1',
+          model: COMPLEX_MODEL,
         }),
         openai.chat.completions.create({
           messages: [
@@ -106,7 +109,7 @@ export class OpenaiService {
           ],
           n: 5,
           temperature: 1,
-          model: 'gpt-4.1',
+          model: COMPLEX_MODEL,
         }),
       ])
     ).flatMap((p) => p.choices);
@@ -144,7 +147,7 @@ export class OpenaiService {
           content,
         },
       ],
-      model: 'gpt-4.1',
+      model: LIGHT_MODEL,
     });
 
     const { content: articleContent } = websiteContent.choices[0].message;
@@ -164,7 +167,7 @@ export class OpenaiService {
     const posts =
       (
         await openai.chat.completions.parse({
-          model: 'gpt-4.1',
+          model: LIGHT_MODEL,
           messages: [
             {
               role: 'system',
@@ -197,7 +200,7 @@ export class OpenaiService {
               return (
                 (
                   await openai.chat.completions.parse({
-                    model: 'gpt-4.1',
+                    model: LIGHT_MODEL,
                     messages: [
                       {
                         role: 'system',
@@ -233,7 +236,7 @@ export class OpenaiService {
         const parse =
           (
             await openai.chat.completions.parse({
-              model: 'gpt-4.1',
+              model: COMPLEX_MODEL,
               messages: [
                 {
                   role: 'system',

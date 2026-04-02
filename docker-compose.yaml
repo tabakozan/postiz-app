@@ -80,8 +80,14 @@ services:
       # NEXT_PUBLIC_SENTRY_DSN: 'http://spotlight:8969/stream'
       # SENTRY_SPOTLIGHT: '1'
 
+      # === OpenRouter LLM Settings (replaces OpenAI)
+      OPENROUTER_API_KEY: ''
+      OPENROUTER_BASE_URL: 'https://openrouter.ai/api/v1'
+      POSTIZ_LIGHT_MODEL: 'openai/gpt-4.1-mini'    # classification, extraction
+      POSTIZ_COMPLEX_MODEL: 'openai/gpt-4.1'        # content generation, reasoning
+      POSTIZ_IMAGE_MODEL: 'google/gemini-3.1-flash-image-preview'  # image generation
+
       # === Misc Settings
-      OPENAI_API_KEY: ''
       NEXT_PUBLIC_DISCORD_SUPPORT: ''
       NEXT_PUBLIC_POLOTNO: ''
       API_LIMIT: 30

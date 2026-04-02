@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Agent } from '@mastra/core/agent';
-import { openai } from '@ai-sdk/openai';
 import { Memory } from '@mastra/memory';
+import { createAISDKProvider, COMPLEX_MODEL } from '@gitroom/nestjs-libraries/openrouter/openrouter.config';
 import { pStore } from '@gitroom/nestjs-libraries/chat/mastra.store';
 import { array, object, string } from 'zod';
 import { ModuleRef } from '@nestjs/core';
@@ -85,7 +85,7 @@ export class LoadToolsService {
       )}
 `;
       },
-      model: openai('gpt-5.2'),
+      model: createAISDKProvider()(COMPLEX_MODEL),
       tools,
       memory: new Memory({
         storage: pStore,
