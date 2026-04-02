@@ -96,6 +96,24 @@ export const useMenuItem = () => {
       path: '/analytics',
     },
     {
+      name: t('blog', 'Blog'),
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            d="M4 4h16v16H4V4zm2 2v4h12V6H6zm0 6v2h5v-2H6zm0 4v2h5v-2H6zm7-4v6h5v-6h-5z"
+            fill="currentColor"
+          />
+        </svg>
+      ),
+      path: '/blog',
+    },
+    {
       name: t('media', 'Media'),
       icon: (
         <svg

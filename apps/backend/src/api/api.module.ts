@@ -37,6 +37,8 @@ import { OAuthAppController } from '@gitroom/backend/api/routes/oauth-app.contro
 import { ApprovedAppsController } from '@gitroom/backend/api/routes/approved-apps.controller';
 import { OAuthController, OAuthAuthorizedController } from '@gitroom/backend/api/routes/oauth.controller';
 import { AnnouncementsController } from '@gitroom/backend/api/routes/announcements.controller';
+import { BlogController } from '@gitroom/backend/api/routes/blog.controller';
+import { BlogGraphService } from '@gitroom/nestjs-libraries/agent/blog.graph.service';
 import { AuthProviderManager } from '@gitroom/backend/services/auth/providers/providers.manager';
 import { GithubProvider } from '@gitroom/backend/services/auth/providers/github.provider';
 import { GoogleProvider } from '@gitroom/backend/services/auth/providers/google.provider';
@@ -63,6 +65,7 @@ const authenticatedController = [
   ApprovedAppsController,
   OAuthAuthorizedController,
   AnnouncementsController,
+  BlogController,
 ];
 @Module({
   imports: [UploadModule],
@@ -96,6 +99,7 @@ const authenticatedController = [
     FarcasterProvider,
     WalletProvider,
     OauthProvider,
+    BlogGraphService,
   ],
   get exports() {
     return [...this.imports, ...this.providers];

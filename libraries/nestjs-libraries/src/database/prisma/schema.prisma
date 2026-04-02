@@ -43,6 +43,8 @@ model Organization {
   webhooks            Webhooks[]
   oauthApp            OAuthApp[]
   oauthAuthorizations OAuthAuthorization[]
+  blogPosts           BlogPost[]
+  blogSettings        BlogSettings?
 
   @@index([apiKey])
   @@index([streakSince])
@@ -956,4 +958,65 @@ model Announcement {
   description String
   color       AnnouncementColor @default(INFO)
   createdAt   DateTime          @default(now())
+}
+
+// ── Blog Management ──────────────────────────────────────────────────────────
+
+enum BlogPostStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+model BlogPost {
+  id              String         @id @default(cuid())
+  organizationId  String
+  title           String
+  slug            String
+  content         String         @db.Text
+  excerpt         String?        @db.Text
+  seoDescription  String?
+  seoKeywords     String[]
+  featuredImage   String?
+  status          BlogPostStatus @default(DRAFT)
+  publishedAt     DateTime?
+  publishedUrl    String?
+  category        String?
+  tags            String[]
+  wordCount       Int            @default(0)
+  jsonLd          String?        @db.Text
+  ogTitle         String?
+  ogDescription   String?
+  ogImage         String?
+  authorName      String?
+  authorTitle     String?
+  deletedAt       DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  organization    Organization   @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@index([status])
+  @@index([deletedAt])
+  @@index([publishedAt])
+}
+
+model BlogSettings {
+  id              String       @id @default(cuid())
+  organizationId  String       @unique
+  masterPrompt    String       @db.Text
+  defaultTone     String       @default("professional")
+  defaultLength   String       @default("1500-3000")
+  defaultLanguage String       @default("en")
+  authorName      String?
+  authorTitle     String?
+  githubRepo      String?
+  githubBranch    String?      @default("main")
+  githubPath      String?      @default("app/blog/posts")
+  githubToken     String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  organization    Organization @relation(fields: [organizationId], references: [id])
 }
